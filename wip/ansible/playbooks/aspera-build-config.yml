@@ -1,0 +1,31 @@
+---
+- name: Build and Push Aspera image
+  hosts: localhost
+
+#  vars_files:
+#    - "{{ secrets_file }}"
+
+  tasks:
+#    - name: Create Docker files
+#      include_role:
+#        name: aspera_config
+#        tasks_from: docker-files
+#      vars:
+#        aspera_config_dest: "{{ generated_config_dir }}"
+#        aspera_config_package_base_url: "{{ package_repository }}"
+#      when: deploy_aspera is defined and deploy_aspera
+#
+#    # Ensure any changes make their way back into source repo
+#    - import_playbook: git-checkin.yml
+#
+
+    ####################################################################################################################
+    - name: Include openshift-applier role
+      include_role:
+        name: roles/openshift-applier/roles/openshift-applier
+
+#    - name: Create Image Stream Templates
+#      include_role:
+#        name: aspera_config
+#        tasks_from: image-streams
+#      when: deploy_aspera is defined and deploy_aspera and aspera_docker_base_path is defined

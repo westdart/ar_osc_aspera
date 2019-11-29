@@ -1,0 +1,10 @@
+---
+aspera_config_name: None
+aspera_config_ssh_port: None
+aspera_config_dest: '/tmp'
+aspera_config_docker_registry: None
+aspera_config_docker_registry_dest_path: 'openshift'
+aspera_config_package_base_url: None
+aspera_config_license_file: "{{ aspera_instance['aspera_license_file'] | default(aspera_license_file) }}"
+
+_aspera_config_docker_registry_base: "{{ aspera_config_docker_registry }}/{{ aspera_config_docker_registry_dest_path }}"

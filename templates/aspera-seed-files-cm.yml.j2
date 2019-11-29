@@ -1,0 +1,38 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: aspera-seed-files-cm
+metadata:
+  annotations:
+    description: Config Map containing Aspera seed files
+    iconClass: icon-amq
+    openshift.io/display-name: Aspera Config Map
+  labels:
+    app: {{ aspera_config_common_name }}
+  name: {{ aspera_config_common_name }}-aspera-config-map
+objects:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: {{ aspera_config_common_name }}-aspera-config-map
+    namespace: {{ aspera_config_namespace }}
+    labels:
+      app: {{ aspera_config_common_name }}
+  data:
+    aspera_id_rsa.pub: public-key
+    sshd_config: |-
+{% for line in lookup('file', aspera_config_sshd_config_file).split('\n') %}
+      {{ line }}
+{% endfor %}
+    launch.sh: |-
+{% for line in lookup('file', aspera_config_launch_script).split('\n') %}
+      {{ line }}
+{% endfor %}
+    aspera.conf: |-
+{% for line in lookup('file', aspera_config_file).split('\n') %}
+      {{ line }}
+{% endfor %}
+    aspera-license: |-
+{% for line in lookup('file', aspera_config_license_file).split('\n') %}
+      {{ line }}
+{% endfor %}

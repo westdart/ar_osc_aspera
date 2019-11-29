@@ -1,0 +1,250 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: aspera-app-1
+  xpaas: 1.4.10
+  appgroup: ${APP_GROUP}
+message: A new file transfer service has been created in your project.
+metadata:
+  annotations:
+    description: Application template for IBM Aspera File Transfer.
+    iconClass: icon-amq
+    openshift.io/display-name: IBM Aspera File Transfer
+    openshift.io/provider-display-name: IBM, Inc.
+    tags: messaging,file-transfer
+    version: 1.4.10
+  name: aspera-app
+objects:
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      application: ${APPLICATION_NAME}
+    name: aspera-sa
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The Aspera file transfer endpoints.
+    labels:
+      application: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    ports:
+    - name: ssh
+      port: {{ aspera_config_sshd_internal_port }}
+      targetPort: {{ aspera_config_sshd_internal_port }}
+    - name: https
+      port: 8443
+      targetPort: 8443
+    selector:
+      deploymentConfig: ${APPLICATION_NAME}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The Aspera Node API.
+    labels:
+      application: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}-api
+  spec:
+    ports:
+    - name: api
+      port: 9092
+      targetPort: 9092
+    selector:
+      deploymentConfig: ${APPLICATION_NAME}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The Aspera Redis endpoint.
+    labels:
+      application: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}-redis
+  spec:
+    ports:
+    - name: redis
+      port: 40001
+      targetPort: 40001
+    selector:
+      deploymentConfig: ${APPLICATION_NAME}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      application: central
+    name: ${APPLICATION_NAME}-np-ssh
+  spec:
+    externalTrafficPolicy: Cluster
+    ports:
+    - name: ssh-33001-33001
+      nodePort: {% raw %}"${{SSH_NODE_PORT}}"
+{% endraw %}
+      port: 33001
+      protocol: TCP
+      targetPort: 33001
+    selector:
+      deploymentConfig: ${APPLICATION_NAME}
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      application: central
+    name: ${APPLICATION_NAME}-np-fasp
+  spec:
+    externalTrafficPolicy: Cluster
+    ports:
+    - name: fasp-33001-33001
+      nodePort: {% raw %}"${{FASP_NODE_PORT}}"
+{% endraw %}
+      port: 33001
+      protocol: UDP
+      targetPort: 33001
+    selector:
+      deploymentConfig: ${APPLICATION_NAME}
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    labels:
+      application: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    port:
+      targetPort: 8443
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    labels:
+      application: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}-api
+  spec:
+    port:
+      targetPort: 9092
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}-api
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      application: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    replicas: 1
+    selector:
+      deploymentConfig: ${APPLICATION_NAME}
+    strategy:
+      rollingParams:
+        maxSurge: 0
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          application: ${APPLICATION_NAME}
+          deploymentConfig: ${APPLICATION_NAME}
+        name: ${APPLICATION_NAME}
+      spec:
+        containers:
+        - env:
+          - name: APPLICATION_NAME
+            value: ${APPLICATION_NAME}
+          - name: SEED_FILES_CONF_HASH
+            value: ${SEED_FILES_CONF_HASH}
+          ports:
+          - containerPort: {{ aspera_config_sshd_internal_port }}
+            name: ssh
+            protocol: TCP
+          - containerPort: 8443
+            name: https
+            protocol: TCP
+          - containerPort: 9092
+            name: api
+            protocol: TCP
+          - containerPort: 40001
+            name: redis
+            protocol: TCP
+          name: ${APPLICATION_NAME}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8443
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8443
+          terminationGracePeriodSeconds: 60
+          volumeMounts:
+          - mountPath: /mnt/aspera/seed/
+            name: seedfiles
+            readOnly: true
+        imagePullPolicy: Always
+        serviceAccountName: aspera-sa
+        terminationGracePeriodSeconds: 60
+        volumes:
+        - name: seedfiles
+          configMap:
+            name: ${SEED_FILES_CM}
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${APPLICATION_NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${IMAGE_NAME}
+          namespace: ${IMAGE_STREAM_NAMESPACE}
+      type: ImageChange
+    - type: ConfigChange
+parameters:
+- description: The name of the application.
+  displayName: Application Name
+  name: APPLICATION_NAME
+  required: true
+  value: aspera-file-transfer
+- description: The namespace in which the image streams for Red Hat Middleware images
+    are installed. These image streams are normally installed in the openshift namespace.
+    You should only need to modify this if you installed the image streams in a different
+    namespace/project.
+  displayName: Image Stream Namespace
+  name: IMAGE_STREAM_NAMESPACE
+  value: openshift
+- description: The name of the Aspera image to use.
+  displayName: Image Name
+  name: IMAGE_NAME
+  value: aspera:latest
+- description: Aspera seed files config map
+  displayName: Aspera Config Map
+  name: SEED_FILES_CM
+  required: true
+- description: Application Group Name
+  displayName: Application Group Name
+  name: APP_GROUP
+  required: true
+- description: Hash of the seed files config for change detection purposes
+  displayName: Seed files Config Hash
+  name: SEED_FILES_CONF_HASH
+  required: false
+- description: The Aspera SSH Node Port.
+  displayName: Aspera SSH Node Port
+  name: SSH_NODE_PORT
+  value: "30022"
+- description: The Aspera FASP (UDP) Node Port.
+  displayName: Aspera FASP Node Port
+  name: FASP_NODE_PORT
+  value: "30023"

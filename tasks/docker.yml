@@ -1,0 +1,26 @@
+---
+# Docker image structure:
+# rhel7 : Base RedHat 7 image (subscribed or unsubscribed)
+#   |-- aspera-rhel7-base : RHEL 7 with Aspera dependencies only (not Aspera) [templates/dockerfile-generic-rpm]
+#      |---- aspera-base : Base Aspera image - i.e. with all OS modifications present common to both server and endpoint [templates/dockerfile-aspera-base]
+#        |---- aspera-hste : Aspera server image
+#        |---- aspera-hsts : Aspera endpoint image
+
+- name: Login to Openshift Docker Repository
+  shell: docker login -p $(oc whoami -t) -u $(oc whoami) {{ aspera_config_docker_registry }}
+  changed_when: false
+  when: aspera_config_push_images
+
+- name: Create Docker files
+  import_tasks: docker-files.yml
+
+- debug:
+    msg: "Using local Docker to build images: {{ aspera_config_local_docker }}"
+
+- name: Import docker tasks for Ansible > 2.8
+  import_tasks: docker-a2.8.yml
+  when: aspera_config_local_docker and ansible_version.full >= "2.8.0"
+
+- name: Import docker tasks for Ansible < 2.8
+  import_tasks: docker-a2.7.yml
+  when: aspera_config_local_docker and ansible_version.full < "2.8.0"

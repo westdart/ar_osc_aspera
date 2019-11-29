@@ -1,0 +1,15 @@
+---
+- name: Ensure inventory directories
+  file:
+    path: "{{ aspera_config_dest_inventory }}/group_vars"
+    state: directory
+
+- name: Create hosts inventory file
+  template:
+    src: hosts.j2
+    dest: "{{ aspera_config_dest_inventory }}/hosts"
+
+- name: Create seed hosts group vars files
+  template:
+    src: seed-hosts-template.yml.j2
+    dest: "{{ aspera_config_dest_inventory }}/group_vars/"

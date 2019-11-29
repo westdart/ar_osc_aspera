@@ -1,0 +1,19 @@
+---
+- name: Ensure docker build dirs exists
+  file:
+    path: "{{ aspera_config_dest_docker }}/{{ item }}"
+    state: directory
+  with_items:
+    - aspera_rhel7_base
+    - aspera_base
+
+- name: Generate the Dockerfile for Aspera Base
+  template:
+    src: dockerfile-aspera-base.j2
+    dest: "{{ aspera_config_dest_docker }}/aspera_base/Dockerfile"
+
+- name: Generate the Dockerfile for Aspera RHEL7 Base
+  template:
+    src: dockerfile-generic-rpm.j2
+    dest: "{{ aspera_config_dest_docker }}/aspera_rhel7_base/Dockerfile"
+  when: not aspera_config_have_rhel_subscription

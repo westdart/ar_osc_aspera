@@ -1,0 +1,15 @@
+FROM {{ aspera_config_rhel_base_image_name }}
+
+ARG username
+ARG password
+
+RUN useradd -m --gid 0 --uid 10001 --comment "asperaUser"  $username \
+ && usermod -s /bin/bash $username && echo "$username:$password" | chpasswd \
+ && groupadd aspadmins \
+ && usermod -a -G aspadmins $username \
+ && mkdir -p /home/$username/.ssh /opt/aspera \
+ && chown -R $username:root /home/$username/.ssh /opt/aspera \
+ && chmod 700 /home/$username/.ssh /home/$username
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["sh","/mnt/aspera/seed/launch.sh"]

@@ -1,0 +1,35 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: aspera-node-port
+  app: {{ aspera_config_common_name }}
+metadata:
+  annotations:
+    description: Service exposing a node-port for Aspera File Transfer
+    iconClass: icon-amq
+    openshift.io/display-name: Aspera File Transfer NodePort Service
+  labels:
+    app: {{ aspera_config_common_name }}
+  name: {{ aspera_instance | aspera_application_name }}-np-svc
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: {{ aspera_config_common_name }}
+    name: {{ aspera_instance | aspera_application_name }}-np-svc
+    namespace: {{ aspera_config_namespace }}
+  spec:
+    externalTrafficPolicy: Cluster
+    ports:
+    - name: {{ aspera_config_sshd_internal_port }}-{{ aspera_config_sshd_internal_port }}
+      nodePort: {{ aspera_instance.aspera_node_port }}
+      port: {{ aspera_config_sshd_internal_port }}
+      protocol: TCP
+      targetPort: {{ aspera_config_sshd_internal_port }}
+    selector:
+      deploymentConfig: {{ aspera_instance | aspera_application_name }}
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
