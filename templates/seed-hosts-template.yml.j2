@@ -1,34 +1,32 @@
 ---
-
 openshift_cluster_content:
 - object: Projects
   content:
-{% if 'parent' not in app_instance %}
-{% set namespace = app_instance | app_namespace(deployment_phase) %}
-{% set app_common_name = deployment_phase + '-' + app_instance.name %}
-  - name: {{ app_common_name }} Project
-    template: "{{ playbook_dir }}/../templates/project-template.yml"
+{% if 'parent' not in ar_osc_aspera_instance %}
+  - name: {{ ar_osc_aspera_name }} Project
+    template: "{{ _ar_osc_aspera_config_dest_templates }}/project-template.yml"
     action: create
     params_from_vars:
-      NAMESPACE: "{{ namespace }}"
-      NAMESPACE_DISPLAY_NAME: "{{ namespace | upper }}"
+      NAMESPACE: "{{ ar_osc_aspera_ns }}"
+      NAMESPACE_DISPLAY_NAME: "{{ ar_osc_aspera_ns | upper }}"
     tags:
     - projects
     - aspera
 
 {% endif %}
 
-{% if 'serviceaccounts' in app_instance and app_instance.serviceaccounts | length > 0 %}
+{% if ar_osc_aspera_instance.serviceaccounts is defined %}
+{% set serviceaccounts = ar_osc_aspera_instance.serviceaccounts | merge_list_of_dicts({'namespace': ar_osc_aspera_ns}) %}
 - object: Service Accounts for {{ deployment_phase | upper }}
   content:
-{% for serviceaccount in app_instance.serviceaccounts | default([]) %}
+{% for serviceaccount in ar_osc_aspera_instance.serviceaccounts %}
   - name: {{ serviceaccount.name }}-serviceaccount
-    namespace: "{{ serviceaccount.namespace }}"
-    template: "{{ playbook_dir }}/../templates/serviceaccount-template.yml"
+    namespace: "{{ ar_osc_aspera_ns }}"
+    template: "{{ _ar_osc_aspera_config_dest_templates }}/serviceaccount-template.yml"
     action: apply
     params_from_vars:
       SA_NAME: {{ serviceaccount.name }}
-      SA_NAMESPACE: {{ serviceaccount.namespace }}
+      SA_NAMESPACE: {{ ar_osc_aspera_ns }}
     tags:
     - projects
     - serviceaccounts
@@ -39,51 +37,41 @@ openshift_cluster_content:
     post_steps:
       - role: scc_binding
         vars:
-          scc_binding_items: {{ app_instance.serviceaccounts | default([]) }}
-
+          tmp_dep_dir: {{ playbook_dir}}/../roles/
+          scc_binding_items: {{ serviceaccounts | to_json }}
 {% endif %}
 
 - object: Deployments {{ deployment_phase | upper }}
   content:
-{% set app_short_name = app_instance | group_label %}
-{% set app_common_name = deployment_phase + '-' + app_instance.name %}
-{% set namespace = app_instance | app_namespace(deployment_phase) %}
-
-# Aspera Config Map for {{ app_common_name }}
-  - name: {{ app_short_name }}-aspera-config-map
-    namespace: "{{ namespace }}"
-    template: "{{ aspera_config_dest_templates }}/{{ app_instance.name }}/aspera-seed-files-cm.yml"
+# Application instances
+{% if deploy_aspera is defined and deploy_aspera %}
+# Aspera Config Map for {{ ar_osc_aspera_name }}
+  - name: {{ ar_osc_aspera_name }}-aspera-config-map
+    namespace: "{{ ar_osc_aspera_ns }}"
+    template: "{{ _ar_osc_aspera_config_dest_templates }}/aspera-seed-files-cm.yml"
     action: apply
     tags:
     - aspera
 
-{% endif %}
-
-# Application instances
-{% set app_short_name = app_instance | group_label %}
-{% set app_common_name = deployment_phase + '-' + app_instance.name %}
-{% set namespace = app_instance | app_namespace(deployment_phase) %}
-{% if deploy_aspera is defined and deploy_aspera %}
-# Aspera instance for {{ app_common_name }}
-  - name: "{{ app_instance | aspera_application_name }}"
-    namespace: "{{ namespace }}"
-    template: "{{ aspera_config_dest_templates }}/{{ app_instance.name }}/aspera-k8s-template.yml"
+# Aspera instance for {{ ar_osc_aspera_name }}
+  - name: "{{ ar_osc_aspera_instance | aspera_application_name }}"
+    namespace: "{{ ar_osc_aspera_ns }}"
+    template: "{{ _ar_osc_aspera_config_dest_templates }}/aspera-k8s-template.yml"
     action: apply
     params_from_vars:
-      APPLICATION_NAME: "{{ app_instance | aspera_application_name }}"
-      SEED_FILES_CM: "{{ app_short_name }}-aspera-config-map"
-      SEED_FILES_CONF_HASH: "{{ lookup('file', aspera_config_dest_templates + '/' + app_instance.name + '/aspera-seed-files-cm.yml') | hash('md5') }}"
-{% if aspera_image is defined or 'aspera_image' in app_instance %}
-      IMAGE_NAME: {{ app_instance.aspera_image | default(aspera_image) }}
+      APPLICATION_NAME: "{{ ar_osc_aspera_instance | aspera_application_name }}"
+      SEED_FILES_CM: "{{ ar_osc_aspera_name }}-aspera-config-map"
+      SEED_FILES_CONF_HASH: "{{ lookup('file', _ar_osc_aspera_config_dest_templates + '/aspera-seed-files-cm.yml') | hash('md5') }}"
+{% if aspera_image is defined or 'aspera_image' in ar_osc_aspera_instance %}
+      IMAGE_NAME: {{ ar_osc_aspera_instance.aspera_image | default(aspera_image) }}
 {% endif %}
-{% if aspera_image_ns is defined or 'aspera_image_ns' in app_instance %}
-      IMAGE_STREAM_NAMESPACE: {{ app_instance.aspera_image_ns | default(aspera_image_ns) }}
+{% if aspera_image_ns is defined or 'aspera_image_ns' in ar_osc_aspera_instance %}
+      IMAGE_STREAM_NAMESPACE: {{ ar_osc_aspera_instance.aspera_image_ns | default(aspera_image_ns) }}
 {% endif %}
-      APP_GROUP: "{{ app_instance | group_label }}"
-      SSH_NODE_PORT: {{ app_instance.aspera_ssh_node_port | default('30022') }}
-      FASP_NODE_PORT: {{ app_instance.aspera_fasp_node_port | default('30023') }}
+      APP_GROUP: "{{ ar_osc_aspera_name }}"
+      SSH_NODE_PORT: {{ ar_osc_aspera_instance.aspera_ssh_node_port | default('30022') }}
+      FASP_NODE_PORT: {{ ar_osc_aspera_instance.aspera_fasp_node_port | default('30023') }}
     tags:
     - aspera
 
-{% endif %}
 {% endif %}

@@ -6,6 +6,7 @@ ARG username
 ADD $package_url /tmp/aspera.rpm
 
 RUN rpm -Uvh /tmp/aspera.rpm \
+ && chown -R $username:root /opt/aspera \
  && mkdir /desbs \
  && chown $username:root /desbs \
  && chmod 770 /desbs \

@@ -7,20 +7,20 @@
 #        |---- aspera-hsts : Aspera endpoint image
 
 - name: Login to Openshift Docker Repository
-  shell: docker login -p $(oc whoami -t) -u $(oc whoami) {{ aspera_config_docker_registry }}
+  shell: docker login -p $(oc whoami -t) -u $(oc whoami) {{ ar_osc_aspera_docker_registry }}
   changed_when: false
-  when: aspera_config_push_images
+  when: ar_osc_aspera_push_images
 
 - name: Create Docker files
   import_tasks: docker-files.yml
 
 - debug:
-    msg: "Using local Docker to build images: {{ aspera_config_local_docker }}"
+    msg: "Using local Docker to build images: {{ ar_osc_aspera_local_docker }}"
 
 - name: Import docker tasks for Ansible > 2.8
   import_tasks: docker-a2.8.yml
-  when: aspera_config_local_docker and ansible_version.full >= "2.8.0"
+  when: ar_osc_aspera_local_docker and ansible_version.full >= "2.8.0"
 
 - name: Import docker tasks for Ansible < 2.8
   import_tasks: docker-a2.7.yml
-  when: aspera_config_local_docker and ansible_version.full < "2.8.0"
+  when: ar_osc_aspera_local_docker and ansible_version.full < "2.8.0"

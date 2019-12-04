@@ -8,32 +8,32 @@
       pull: no
       path: "{{ role_path }}/docker/rhel-plus"
       args:
-        packagelist: "{{ aspera_config_package_dependencies | join(' ') }}"
-    name: "{{ _aspera_config_docker_registry_base }}/{{ aspera_config_rhel_base_image_name }}"
-    tag: "{{ aspera_config_version }}"
-    push: "{{ aspera_config_push_images }}"
+        packagelist: "{{ ar_osc_aspera_package_dependencies | join(' ') }}"
+    name: "{{ _ar_osc_aspera_docker_registry_base }}/{{ ar_osc_aspera_rhel_base_image_name }}"
+    tag: "{{ ar_osc_aspera_version }}"
+    push: "{{ ar_osc_aspera_push_images }}"
     source: build
     force_source: yes
     force_tag: yes
-  when: aspera_config_have_rhel_subscription
+  when: ar_osc_aspera_have_rhel_subscription
 
 - name: Build Aspera RHEL7 Base Image (from rpms)
   docker_image:
     build:
       pull: no
-      path: "{{ aspera_config_dest_docker }}/aspera_rhel7_base"
-    name: "{{ _aspera_config_docker_registry_base }}/{{ aspera_config_rhel_base_image_name }}"
-    tag: "{{ aspera_config_version }}"
-    push: "{{ aspera_config_push_images }}"
+      path: "{{ _ar_osc_aspera_config_dest_docker }}/aspera_rhel7_base"
+    name: "{{ _ar_osc_aspera_docker_registry_base }}/{{ ar_osc_aspera_rhel_base_image_name }}"
+    tag: "{{ ar_osc_aspera_version }}"
+    push: "{{ ar_osc_aspera_push_images }}"
     source: build
     force_source: yes
     force_tag: yes
-  when: not aspera_config_have_rhel_subscription
+  when: not ar_osc_aspera_have_rhel_subscription
 
 - name: Tag Aspera RHEL7 Base Image in Local Repo as latest
   docker_image:
-    name: "{{ _aspera_config_docker_registry_base }}/{{ aspera_config_rhel_base_image_name }}:{{ aspera_config_version }}"
-    repository: "{{ aspera_config_rhel_base_image_name }}:latest"
+    name: "{{ _ar_osc_aspera_docker_registry_base }}/{{ ar_osc_aspera_rhel_base_image_name }}:{{ ar_osc_aspera_version }}"
+    repository: "{{ ar_osc_aspera_rhel_base_image_name }}:latest"
     force_tag: yes
     source: local
 
@@ -41,20 +41,20 @@
   docker_image:
     build:
       pull: no
-      path: "{{ aspera_config_dest_docker }}/aspera_base"
+      path: "{{ _ar_osc_aspera_config_dest_docker }}/aspera_base"
       args:
         username: aspera
         password: "{{ aspera_secrets.aspera_password }}"
-    name: "{{ _aspera_config_docker_registry_base }}/aspera-base"
-    tag: "{{ aspera_config_version }}"
-    push: "{{ aspera_config_push_images }}"
+    name: "{{ _ar_osc_aspera_docker_registry_base }}/aspera-base"
+    tag: "{{ ar_osc_aspera_version }}"
+    push: "{{ ar_osc_aspera_push_images }}"
     source: build
     force_source: yes
     force_tag: yes
 
 - name: Tag Aspera Base Image in Local Repo as latest
   docker_image:
-    name: "{{ _aspera_config_docker_registry_base }}/aspera-base:{{ aspera_config_version }}"
+    name: "{{ _ar_osc_aspera_docker_registry_base }}/aspera-base:{{ ar_osc_aspera_version }}"
     repository: aspera-base:latest
     force_tag: yes
     source: local
@@ -63,12 +63,13 @@
   docker_image:
     build:
       pull: no
-      path: "{{ role_path }}/docker/hste"
+      path: "{{ role_path }}/files/docker/hste"
       args:
-        package_url: "{{ aspera_config_endpoint_package }}"
+        package_url: "{{ ar_osc_aspera_endpoint_package }}"
         username: aspera
-    name: "{{ _aspera_config_docker_registry_base }}/aspera-hste"
-    push: "{{ aspera_config_push_images }}"
+    name: "{{ _ar_osc_aspera_docker_registry_base }}/aspera-hste"
+    tag: "{{ ar_osc_aspera_version }}"
+    push: "{{ ar_osc_aspera_push_images }}"
     source: build
     force_source: yes
     force_tag: yes
@@ -77,14 +78,15 @@
   docker_image:
     build:
       pull: no
-      path: "{{ role_path }}/docker/hsts"
+      path: "{{ role_path }}/files/docker/hsts"
       args:
-        package_url: "{{ aspera_config_server_package }}"
+        package_url: "{{ ar_osc_aspera_server_package }}"
         username: aspera
-    name: "{{ _aspera_config_docker_registry_base }}/aspera-hsts"
-    push: "{{ aspera_config_push_images }}"
+    name: "{{ _ar_osc_aspera_docker_registry_base }}/aspera-hsts"
+    tag: "{{ ar_osc_aspera_version }}"
+    push: "{{ ar_osc_aspera_push_images }}"
     source: build
     force_source: yes
     force_tag: yes
 
-- debug: var=aspera_config_push_images
+- debug: var=ar_osc_aspera_push_images

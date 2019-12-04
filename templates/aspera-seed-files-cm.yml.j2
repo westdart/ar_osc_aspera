@@ -8,31 +8,31 @@ metadata:
     iconClass: icon-amq
     openshift.io/display-name: Aspera Config Map
   labels:
-    app: {{ aspera_config_common_name }}
-  name: {{ aspera_config_common_name }}-aspera-config-map
+    app: {{ ar_osc_aspera_name }}
+  name: {{ ar_osc_aspera_name }}-aspera-config-map
 objects:
 - apiVersion: v1
   kind: ConfigMap
   metadata:
-    name: {{ aspera_config_common_name }}-aspera-config-map
-    namespace: {{ aspera_config_namespace }}
+    name: {{ ar_osc_aspera_name }}-aspera-config-map
+    namespace: {{ ar_osc_aspera_ns }}
     labels:
-      app: {{ aspera_config_common_name }}
+      app: {{ ar_osc_aspera_name }}
   data:
     aspera_id_rsa.pub: public-key
     sshd_config: |-
-{% for line in lookup('file', aspera_config_sshd_config_file).split('\n') %}
+{% for line in lookup('file', _ar_osc_aspera_sshd_config_file).split('\n') %}
       {{ line }}
 {% endfor %}
     launch.sh: |-
-{% for line in lookup('file', aspera_config_launch_script).split('\n') %}
+{% for line in lookup('file', ar_osc_aspera_launch_script).split('\n') %}
       {{ line }}
 {% endfor %}
     aspera.conf: |-
-{% for line in lookup('file', aspera_config_file).split('\n') %}
+{% for line in lookup('file', _ar_osc_aspera_config_file).split('\n') %}
       {{ line }}
 {% endfor %}
     aspera-license: |-
-{% for line in lookup('file', aspera_config_license_file).split('\n') %}
+{% for line in lookup('file', ar_osc_aspera_license_file).split('\n') %}
       {{ line }}
 {% endfor %}

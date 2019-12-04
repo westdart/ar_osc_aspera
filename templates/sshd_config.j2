@@ -14,14 +14,14 @@
 # SELinux about this change.
 # semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
 #
-Port {{ aspera_config_ssh_port | default('22') }}
+Port {{ ar_osc_aspera_sshd_internal_port | default('22') }}
 #AddressFamily any
 #ListenAddress 0.0.0.0
 #ListenAddress ::
 
-HostKey /home/{{ aspera_config_username }}/.ssh/ssh_host_rsa_key
-HostKey /home/{{ aspera_config_username }}/.ssh/ssh_host_ecdsa_key
-HostKey /home/{{ aspera_config_username }}/.ssh/ssh_host_ed25519_key
+HostKey /home/{{ ar_osc_aspera_username }}/.ssh/ssh_host_rsa_key
+HostKey /home/{{ ar_osc_aspera_username }}/.ssh/ssh_host_ecdsa_key
+HostKey /home/{{ ar_osc_aspera_username }}/.ssh/ssh_host_ed25519_key
 
 # Ciphers and keying
 #RekeyLimit default none

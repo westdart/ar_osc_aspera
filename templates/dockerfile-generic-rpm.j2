@@ -1,5 +1,5 @@
 FROM rhel7
 
-ADD {{ aspera_config_package_list | join(' ') }} /tmp/
+ADD {{ ar_osc_aspera_package_list | join(' ') }} /tmp/
 
 RUN yum install -y /tmp/*.rpm && rm -f /tmp/*.rpm

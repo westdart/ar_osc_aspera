@@ -2,33 +2,33 @@ apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: aspera-node-port
-  app: {{ aspera_config_common_name }}
+  app: {{ ar_osc_aspera_name }}
 metadata:
   annotations:
     description: Service exposing a node-port for Aspera File Transfer
     iconClass: icon-amq
     openshift.io/display-name: Aspera File Transfer NodePort Service
   labels:
-    app: {{ aspera_config_common_name }}
-  name: {{ aspera_instance | aspera_application_name }}-np-svc
+    app: {{ ar_osc_aspera_name }}
+  name: {{ ar_osc_aspera_instance | aspera_application_name }}-np-svc
 objects:
 - apiVersion: v1
   kind: Service
   metadata:
     labels:
-      app: {{ aspera_config_common_name }}
-    name: {{ aspera_instance | aspera_application_name }}-np-svc
-    namespace: {{ aspera_config_namespace }}
+      app: {{ ar_osc_aspera_name }}
+    name: {{ ar_osc_aspera_instance | aspera_application_name }}-np-svc
+    namespace: {{ ar_osc_aspera_ns }}
   spec:
     externalTrafficPolicy: Cluster
     ports:
-    - name: {{ aspera_config_sshd_internal_port }}-{{ aspera_config_sshd_internal_port }}
-      nodePort: {{ aspera_instance.aspera_node_port }}
-      port: {{ aspera_config_sshd_internal_port }}
+    - name: {{ ar_osc_aspera_sshd_internal_port }}-{{ ar_osc_aspera_sshd_internal_port }}
+      nodePort: {{ ar_osc_aspera_instance.aspera_node_port }}
+      port: {{ ar_osc_aspera_sshd_internal_port }}
       protocol: TCP
-      targetPort: {{ aspera_config_sshd_internal_port }}
+      targetPort: {{ ar_osc_aspera_sshd_internal_port }}
     selector:
-      deploymentConfig: {{ aspera_instance | aspera_application_name }}
+      deploymentConfig: {{ ar_osc_aspera_instance | aspera_application_name }}
     sessionAffinity: None
     type: NodePort
   status:

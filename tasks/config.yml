@@ -1,16 +1,22 @@
 ---
 - name: Ensure dest dir exists
   file:
-    path: "{{ aspera_config_dest_templates }}"
+    path: "{{ _ar_osc_aspera_config_dest_templates }}"
     state: directory
+
+- name: Copy common templates
+  include_role:
+    name: ar_osc_common_templates
+  vars:
+    ar_osc_common_templates_dest: "{{ _ar_osc_aspera_config_dest_templates }}"
 
 - name: Generate aspera sshd config
   template:
     src: sshd_config.j2
-    dest: "{{ aspera_config_sshd_config_file }}"
+    dest: "{{ _ar_osc_aspera_sshd_config_file }}"
 
 - set_fact:
-    _aspera_image: "{{ aspera_instance.aspera_image | default(aspera_image) }}"
+    _aspera_image: "{{ ar_osc_aspera_instance.aspera_image | default(aspera_image) }}"
 
 - set_fact:
     aspera_conf_template: "aspera_hsts_conf.j2"
@@ -22,20 +28,20 @@
 
 - name: Guard against invalid config
   fail:
-    msg: "The Aspera image name must contain either 'hsts' or 'hste' depending on whether '{{ aspera_config_common_name }}' is a server or endpoint"
+    msg: "The Aspera image name must contain either 'hsts' or 'hste' depending on whether '{{ ar_osc_aspera_name }}' is a server or endpoint"
   when: '"hste" not in _aspera_image and "hsts" not in _aspera_image'
 
 - name: Generate aspera config
   template:
     src: "{{ aspera_conf_template }}"
-    dest: "{{ aspera_config_file }}"
+    dest: "{{ _ar_osc_aspera_config_file }}"
 
 - name: Generate aspera seed files config map
   template:
     src: aspera-seed-files-cm.yml.j2
-    dest: "{{ aspera_config_dest_templates }}/aspera-seed-files-cm.yml"
+    dest: "{{ _ar_osc_aspera_config_dest_templates }}/aspera-seed-files-cm.yml"
 
 - name: Copy Aspera app template to working area
   template:
-    src: "{{ aspera_config_k8s_template }}"
-    dest: "{{ aspera_config_dest_templates }}/aspera-k8s-template.yml"
+    src: "{{ ar_osc_aspera_k8s_template }}"
+    dest: "{{ _ar_osc_aspera_config_dest_templates }}/aspera-k8s-template.yml"

@@ -1,31 +1,9 @@
 ---
-- name: Build Docker Images
-  include_tasks: docker.yml
+- import_tasks: docker.yml
   tags:
     - docker
-
-- name: Generate Config
-  include_tasks: config.yml
-    - config
-
-- name: Create load config for secrets
-  include_tasks: secrets.yml
-  tags:
-    - secrets
-
-- name: Include openshift-applier role
-  include_role:
-    name: roles/openshift-applier/roles/openshift-applier
-    - apply
-
-#- name: Setup Service Accounts
-#  include_tasks: service-accounts.yml
-#
-#- name: Include openshift-applier role
-#  include_role:
-#    name: roles/openshift-applier/roles/openshift-applier
-#
-#- name: Remove load config for secrets
-#  include_tasks: secrets.yml
-#  tags:
-#    - rmsecrets
+- import_tasks: config.yml
+- import_tasks: secrets.yml
+- import_tasks: seed.yml
+- import_tasks: apply.yml
+- import_tasks: remove-secrets.yml

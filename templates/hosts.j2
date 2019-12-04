@@ -1,5 +1,2 @@
-{% for app_instance in app_instances %}
-[{{ app_instance.name }}-seed-hosts]
-{{ app_instance.name }}.localhost ansible_connection=local ansible_host=localhost seed_host_name={{ app_instance.name }}
-
-{% endfor %}
+[seed-hosts]
+localhost ansible_connection=local seed_host_name={{ ar_osc_aspera_instance.name }}

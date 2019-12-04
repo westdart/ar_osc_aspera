@@ -32,8 +32,8 @@ objects:
   spec:
     ports:
     - name: ssh
-      port: {{ aspera_config_sshd_internal_port }}
-      targetPort: {{ aspera_config_sshd_internal_port }}
+      port: {{ ar_osc_aspera_sshd_internal_port }}
+      targetPort: {{ ar_osc_aspera_sshd_internal_port }}
     - name: https
       port: 8443
       targetPort: 8443
@@ -167,7 +167,7 @@ objects:
           - name: SEED_FILES_CONF_HASH
             value: ${SEED_FILES_CONF_HASH}
           ports:
-          - containerPort: {{ aspera_config_sshd_internal_port }}
+          - containerPort: {{ ar_osc_aspera_sshd_internal_port }}
             name: ssh
             protocol: TCP
           - containerPort: 8443
