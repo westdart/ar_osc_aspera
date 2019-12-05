@@ -23,6 +23,8 @@ ar_osc_aspera_package_dependencies:
   - perl-Data-Dumper
   - nmap-ncat
 
+ar_osc_aspera_labels: []
+
 ar_osc_aspera_rhel_base_image_name: 'aspera-rhel7-base'
 ar_osc_aspera_package_list: [
     "{{ ar_osc_aspera_package_base_url }}/tcp_wrappers-libs-7.6-77.el7.x86_64.rpm",
