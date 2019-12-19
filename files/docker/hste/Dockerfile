@@ -6,6 +6,7 @@ ARG username
 ADD $package_url /tmp/aspera.rpm
 
 RUN rpm -Uvh /tmp/aspera.rpm \
+ && usermod -s /bin/aspshell $username \
  && chown -R $username:root /opt/aspera \
  && mkdir /mjdi \
  && chown $username:root /mjdi \
