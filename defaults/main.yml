@@ -8,8 +8,8 @@ ar_osc_aspera_push_images: yes
 ar_osc_aspera_push_timeout: 180
 ar_osc_aspera_local_docker: true
 
-ar_osc_aspera_server_package: "{{ ar_osc_aspera_package_base_url }}/dummy-1-0.noarch.rpm"
-ar_osc_aspera_endpoint_package: "{{ ar_osc_aspera_package_base_url }}/dummy-1-0.noarch.rpm"
+ar_osc_aspera_server_package: "{{ ar_osc_aspera_package_base_url }}/ibm-aspera-hsts-3.9.1.168302-linux-6411.rpm"
+ar_osc_aspera_endpoint_package: "{{ ar_osc_aspera_package_base_url }}/ibm-aspera-hste-3.9.1.168302-linux-64.rpm"
 
 ar_osc_aspera_have_rhel_subscription: false
 
@@ -63,11 +63,13 @@ ar_osc_aspera_package_list: [
     "{{ ar_osc_aspera_package_base_url }}/perl-threads-1.87-4.el7.x86_64.rpm",
     "{{ ar_osc_aspera_package_base_url }}/perl-threads-shared-1.43-6.el7.x86_64.rpm",
     "{{ ar_osc_aspera_package_base_url }}/dumb-init-1.2.0-1.20170802gitd283f8a.el6.x86_64.rpm",
-    # NOTE: The following are only for testing purposes where Aspera is not available
+    # NOTE: The following are only for testing purposes
     "{{ ar_osc_aspera_package_base_url }}/libpcap-1.5.3-11.el7.x86_64.rpm",
     "{{ ar_osc_aspera_package_base_url }}/nmap-ncat-6.40-19.el7.x86_64.rpm",
     "{{ ar_osc_aspera_package_base_url }}/libedit-3.0-12.20121213cvs.el7.x86_64.rpm",
-    "{{ ar_osc_aspera_package_base_url }}/openssh-clients-7.4p1-21.el7.x86_64.rpm"
+    "{{ ar_osc_aspera_package_base_url }}/openssh-clients-7.4p1-21.el7.x86_64.rpm",
+    "{{ ar_osc_aspera_package_base_url }}/net-tools-2.0-0.25.20131004git.el7.x86_64.rpm",
+    "{{ ar_osc_aspera_package_base_url }}/tcpdump-4.9.2-4.el7_7.1.x86_64.rpm"
   ]
 
 _ar_osc_aspera_app_type: 'aspera'
@@ -76,5 +78,5 @@ _ar_osc_aspera_config_dest_inventory: "{{ _ar_osc_aspera_config_dest }}/inventor
 _ar_osc_aspera_config_dest_templates: "{{ _ar_osc_aspera_config_dest }}/templates"
 _ar_osc_aspera_config_dest_docker: "{{ _ar_osc_aspera_config_dest }}/docker"
 _ar_osc_aspera_sshd_config_file: "{{ _ar_osc_aspera_config_dest_templates }}/sshd_config"
-_ar_osc_aspera_config_file: "{{ _ar_osc_aspera_config_dest_templates }}/aspera_config"
+_ar_osc_aspera_config_file: "{{ _ar_osc_aspera_config_dest_templates }}/aspera.conf"
 _ar_osc_aspera_docker_registry_base: "{{ ar_osc_aspera_docker_registry }}/{{ ar_osc_aspera_docker_registry_dest_path }}"
