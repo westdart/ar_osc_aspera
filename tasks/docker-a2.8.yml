@@ -73,6 +73,7 @@
     source: build
     force_source: yes
     force_tag: yes
+    timeout: "{{ ar_osc_aspera_push_timeout }}"
 
 - name: Build Aspera HSTS Docker Image
   docker_image:
@@ -88,5 +89,6 @@
     source: build
     force_source: yes
     force_tag: yes
+    timeout: "{{ ar_osc_aspera_push_timeout }}"
 
 - debug: var=ar_osc_aspera_push_images

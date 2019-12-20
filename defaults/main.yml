@@ -5,6 +5,7 @@ ar_osc_aspera_username: "aspera"
 ar_osc_aspera_version: "1.0"
 ar_osc_aspera_sshd_internal_port: '33001'
 ar_osc_aspera_push_images: yes
+ar_osc_aspera_push_timeout: 180
 ar_osc_aspera_local_docker: true
 
 ar_osc_aspera_server_package: "{{ ar_osc_aspera_package_base_url }}/dummy-1-0.noarch.rpm"

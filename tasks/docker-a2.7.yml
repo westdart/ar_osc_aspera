@@ -57,6 +57,7 @@
     tag: "{{ ar_osc_aspera_version }}"
     push: "{{ ar_osc_aspera_push_images }}"
     force: no
+    timeout: "{{ ar_osc_aspera_push_timeout }}"
 
 - name: Build Aspera HSTS Docker Image
   docker_image:
@@ -69,5 +70,6 @@
     tag: "{{ ar_osc_aspera_version }}"
     push: "{{ ar_osc_aspera_push_images }}"
     force: no
+    timeout: "{{ ar_osc_aspera_push_timeout }}"
 
 - debug: var=ar_osc_aspera_push_images
