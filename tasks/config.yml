@@ -36,6 +36,11 @@
     src: "{{ aspera_conf_template }}"
     dest: "{{ _ar_osc_aspera_config_file }}"
 
+- name: Copy launch script to common area
+  copy:
+    src: "{{ ar_osc_aspera_launch_script }}"
+    dest: "{{ _ar_osc_aspera_launch_script }}"
+
 - name: Generate aspera seed files config map
   template:
     src: aspera-seed-files-cm.yml.j2

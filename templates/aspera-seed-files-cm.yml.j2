@@ -19,21 +19,15 @@ objects:
     labels:
       app: {{ ar_osc_aspera_name }}
   data:
-    aspera_id_rsa.pub: {{ aspera_secrets.aspera_pub }}
-    aspera_id_rsa: {{ aspera_secrets.aspera_key }}
     sshd_config: |-
 {% for line in lookup('file', _ar_osc_aspera_sshd_config_file).split('\n') %}
       {{ line }}
 {% endfor %}
     launch.sh: |-
-{% for line in lookup('file', ar_osc_aspera_launch_script).split('\n') %}
+{% for line in lookup('file', _ar_osc_aspera_launch_script).split('\n') %}
       {{ line }}
 {% endfor %}
     aspera.conf: |-
 {% for line in lookup('file', _ar_osc_aspera_config_file).split('\n') %}
-      {{ line }}
-{% endfor %}
-    aspera-license: |-
-{% for line in lookup('file', ar_osc_aspera_license_file).split('\n') %}
       {{ line }}
 {% endfor %}

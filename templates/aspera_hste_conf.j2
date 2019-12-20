@@ -1,11 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <CONF version="2">
+    <server>
+        <ssh_port>{{ ar_osc_aspera_sshd_internal_port }}</ssh_port>
+        <activity_logging>true</activity_logging>
+    </server>
     <central_server>
         <port>40001</port>
         <address>127.0.0.1</address>
     </central_server>
     <default>
         <transfer>
+            <protocol_options>
+                <bind_udp_port>{{ ar_osc_aspera_fasp_internal_port }}</bind_udp_port>
+            </protocol_options>
             <in>
                 <bandwidth>
                     <aggregate>
@@ -69,7 +76,4 @@
             </realm>
         </realms>
     </aaa>
-    <server>
-        <activity_logging>true</activity_logging>
-    </server>
 </CONF>

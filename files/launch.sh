@@ -9,6 +9,7 @@
 USERNAME=aspera
 ASPERA_TYPE=$(cat /aspera-type)
 SEED_DIR=/mnt/aspera/seed
+SECRETS_DIR=/mnt/aspera/.secrets
 SSHD_PID=
 
 if [[ "${ASPERA_TYPE}" == "HSTE" ]]; then
@@ -51,7 +52,6 @@ function startSshd()
 function copyFiles()
 {
     cp ${SEED_DIR}/sshd_config /home/${USERNAME}/sshd_config
-    cp ${SEED_DIR}/aspera-license /opt/aspera/etc/aspera-license
     cp ${SEED_DIR}/aspera.conf /opt/aspera/etc/aspera.conf
 }
 
@@ -67,11 +67,12 @@ function initAspera()
 
 function copyKeys()
 {
-    cat "${SEED_DIR}/aspera_id_rsa.pub" | (base64 -d && echo "")     > /home/${USERNAME}/.ssh/id_rsa.pub && \
-    cat "${SEED_DIR}/aspera_id_rsa" | (base64 -d && echo "") > /home/${USERNAME}/.ssh/id_rsa && \
+    cp "${SECRETS_DIR}/aspera_id_rsa.pub" /home/${USERNAME}/.ssh/id_rsa.pub && \
+    cp "${SECRETS_DIR}/aspera_id_rsa" /home/${USERNAME}/.ssh/id_rsa && \
     cp /home/${USERNAME}/.ssh/id_rsa.pub /home/${USERNAME}/.ssh/authorized_keys && \
     chown -R ${USERNAME}:root /home/${USERNAME}/.ssh/authorized_keys && \
     chmod 600 /home/${USERNAME}/.ssh/authorized_keys /home/${USERNAME}/.ssh/id_rsa
+    cat ${SECRETS_DIR}/aspera-license | base64 -w 60 > /opt/aspera/etc/aspera-license
 }
 
 function runAspera()

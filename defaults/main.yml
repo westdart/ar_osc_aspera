@@ -3,7 +3,8 @@ ar_osc_aspera_launch_script: "{{ role_path }}/files/launch.sh"
 ar_osc_aspera_k8s_template: "aspera-app-1.yml"
 ar_osc_aspera_username: "aspera"
 ar_osc_aspera_version: "1.0"
-ar_osc_aspera_sshd_internal_port: '33001'
+ar_osc_aspera_sshd_internal_port: '30001'
+ar_osc_aspera_fasp_internal_port: '30002'
 ar_osc_aspera_push_images: yes
 ar_osc_aspera_push_timeout: 180
 ar_osc_aspera_local_docker: true
@@ -79,4 +80,5 @@ _ar_osc_aspera_config_dest_templates: "{{ _ar_osc_aspera_config_dest }}/template
 _ar_osc_aspera_config_dest_docker: "{{ _ar_osc_aspera_config_dest }}/docker"
 _ar_osc_aspera_sshd_config_file: "{{ _ar_osc_aspera_config_dest_templates }}/sshd_config"
 _ar_osc_aspera_config_file: "{{ _ar_osc_aspera_config_dest_templates }}/aspera.conf"
+_ar_osc_aspera_launch_script: "{{ _ar_osc_aspera_config_dest_templates }}/launch.sh"
 _ar_osc_aspera_docker_registry_base: "{{ ar_osc_aspera_docker_registry }}/{{ ar_osc_aspera_docker_registry_dest_path }}"

@@ -2,72 +2,22 @@
 Ansible Role for OpenShift Config targeting the Aspera File transfer
 application
 
-## aspera_config
-
-Generate the config files required to build out Aspera file transfer 
-nodes
-
 ## Requirements
-
-
-## Role Variables
-The following details:
-- the parameters that should be passed to the role (aka vars)
-- the defaults that are held
-- the secrets that should generally be sourced from an ansible vault.
-
-### Parameters:
-| Variable                                | Description                                                                         | Default                   |
-| --------                                | -----------                                                                         | -------                   |
-| ar_osc_aspera_instance                         | Object defining the Aspera instance (see below)                                     | None                      |
-| ar_osc_aspera_ssh_port                  | Port that SSHD will listen on                                                       | 22                        |
-| ar_osc_aspera_config_dest                      | Path to where generated config files are placed                                     | /tmp                      |
-| ar_osc_aspera_docker_registry           | The docker registry to push built images to                                         | None                      |
-| ar_osc_aspera_docker_registry_dest_path | The path under the registry where images are pushed (typically a k8s namespace)     | 'openshift'               |
-| ar_osc_aspera_package_base_url          | Base URL to where the RPM files can be found (if not using a subscribed base image) | None                      |
-| ar_osc_aspera_license_file              | Path to the Aspera license file for the instance                                    | 'aspera_license_file' var |
-
-The 'ar_osc_aspera_instance' variable is an object that contains the details on each instance required.
-
-The structure is:
-```
-  {
-    name: "<the name>",
-    aspera_image: "<the image tag to use>",
-    aspera_license_file: "<path to the Aspera license file>",
-    aspera_node_port: <the node port to use to connect over ssh to Aspera>
-  }
-```
-
-### Secrets:
-| Variable                         | Description                                 | Default |
-| --------                         | -----------                                 | ------- |
-|   |                          |     |
-
-### Defaults
-| Variable                             | Description                                                                 | Default                                                           |
-| --------                             | -----------                                                                 | -------                                                           |
-| ar_osc_aspera_ns              | Openshift Namespace / Project                                               | fn: app_namespace                                                 |
-| ar_osc_aspera_name            | Application name                                                            | ar_osc_aspera_instance.name                                              |
-| ar_osc_aspera_launch_script          | The script executed to start Aspera and related processes                   | role_path + '/files/launch.sh'                                    |
-| ar_osc_aspera_k8s_template           | The k8s template to use                                                     | 'aspera-app-1.yml'                                                |
-| ar_osc_aspera_username               | The Aspera username                                                         | 'aspera'                                                          |
-| ar_osc_aspera_version                | The version to ascribe to images created                                    | '1.0'                                                             |
-| ar_osc_aspera_sshd_internal_port     | The SSHD internal port the Aspera Pod listens on                            | '33001'                                                           |
-| ar_osc_aspera_server_package         | The Aspera Server package to use                                            | ar_osc_aspera_package_base_url + '/dummy-1-0.noarch.rpm'          |
-| ar_osc_aspera_endpoint_package       | The Aspera Endpoint package to use                                          | ar_osc_aspera_package_base_url + '/dummy-1-0.noarch.rpm'          |
-| ar_osc_aspera_have_rhel_subscription | Boolean marking if th base image is subscribed to RedHat satellite channels | false                                                             |
-| ar_osc_aspera_package_dependencies   | Direct Aspera package dependencies                                          | ```['openssh-server', 'perl', 'perl-Data-Dumper', 'nmap-ncat']``` |
-| ar_osc_aspera_rhel_base_image_name   | The image name given to the RHEL 7 image + dependent packages               | 'aspera-rhel7-base'                                               |
-| ar_osc_aspera_package_list           | The complete list of package dependencies                                   | (see dependencies)                                                |
-
-
-Dependencies
-------------
-
-The following are RPM dependencies for the deployment of Aspera.
+The following are RPM requirements for the deployment of Aspera.
 These should be either available through subscription-manager or direct
 via a web site defined by the variable 'ar_osc_aspera_package_base_url'
+
+### Aspera RPMs
+#### Server:
+```
+ibm-aspera-hsts-3.9.1.168302-linux-6411.rpm
+```
+#### Endpoint:
+```
+ibm-aspera-hste-3.9.1.168302-linux-64.rpm
+```
+
+#### Aspear RPM dependencies
 ```
 tcp_wrappers-libs-7.6-77.el7.x86_64.rpm
 fipscheck-lib-1.4.1-6.el7.x86_64.rpm
@@ -108,8 +58,67 @@ libpcap-1.5.3-11.el7.x86_64.rpm
 nmap-ncat-6.40-19.el7.x86_64.rpm"
 ```
 
-Example Playbook
-----------------
+
+## Role Variables
+The following details:
+- the parameters that should be passed to the role (aka vars)
+- the defaults that are held
+- the secrets that should generally be sourced from an ansible vault.
+
+### Parameters:
+| Variable                                | Description                                                                         | Default                   |
+| --------                                | -----------                                                                         | -------                   |
+| ar_osc_aspera_instance                  | Object defining the Aspera instance (see below)                                     | None                      |
+| ar_osc_aspera_config_dest               | Path to where generated config files are placed                                     | /tmp                      |
+| ar_osc_aspera_docker_registry           | The docker registry to push built images to                                         | None                      |
+| ar_osc_aspera_docker_registry_dest_path | The path under the registry where images are pushed (typically a k8s namespace)     | 'openshift'               |
+| ar_osc_aspera_package_base_url          | Base URL to where the RPM files can be found (if not using a subscribed base image) | None                      |
+| ar_osc_aspera_license_file              | Path to the Aspera license file for the instance                                    | 'aspera_license_file' var |
+
+The 'ar_osc_aspera_instance' variable is an object that contains the details on each instance required.
+
+The structure is:
+```
+  {
+    name:                  "<the name>",
+    aspera_image:          "<the image tag to use>",
+    aspera_license_file:   "<path to the Aspera license file>",
+    aspera_ssh_node_port:  <the TCP port used by the NodePort Service for SSH>,
+    aspera_fasp_node_port: <the UDP port used by the NodePort Service for FASP>
+  }
+```
+
+### Secrets:
+| Variable                       | Description                                                                                |
+| --------                       | -----------                                                                                |
+| aspera_secrets.aspera_password | The password for the Aspera unix user (ar_osc_aspera_username) within the docker container |
+| aspera_secrets.aspera_key      | The ssh key for the Aspera unix user (ar_osc_aspera_username) within the docker container  |
+ 
+
+### Defaults
+| Variable                             | Description                                                                 | Default                                                  |
+| --------                             | -----------                                                                 | -------                                                  |
+| ar_osc_aspera_ns                     | Openshift Namespace / Project                                               | fn: app_namespace                                        |
+| ar_osc_aspera_name                   | Application name                                                            | ar_osc_aspera_instance.name                              |
+| ar_osc_aspera_launch_script          | The script executed to start Aspera and related processes                   | role_path + '/files/launch.sh'                           |
+| ar_osc_aspera_k8s_template           | The k8s template to use                                                     | 'aspera-app-1.yml'                                       |
+| ar_osc_aspera_username               | The Aspera username                                                         | 'aspera'                                                 |
+| ar_osc_aspera_version                | The version to ascribe to images created                                    | '1.0'                                                    |
+| ar_osc_aspera_sshd_internal_port     | The SSHD internal port the Aspera Pod listens on                            | '33001'                                                  |
+| ar_osc_aspera_server_package         | The Aspera Server package to use                                            | ar_osc_aspera_package_base_url + '/dummy-1-0.noarch.rpm' |
+| ar_osc_aspera_endpoint_package       | The Aspera Endpoint package to use                                          | ar_osc_aspera_package_base_url + '/dummy-1-0.noarch.rpm' |
+| ar_osc_aspera_have_rhel_subscription | Boolean marking if th base image is subscribed to RedHat satellite channels | false                                                    |
+| ar_osc_aspera_package_dependencies   | Direct Aspera package dependencies                                          | (see above RPM requirements)                             |
+| ar_osc_aspera_rhel_base_image_name   | The image name given to the RHEL 7 image + dependent packages               | 'aspera-rhel7-base'                                      |
+| ar_osc_aspera_package_list           | The complete list of package dependencies                                   | (see RPM requirements above)                             |
+
+
+## Dependencies
+
+- openshift-applier
+
+
+## Example Playbook
 
 To create Docker images:
 ```
@@ -118,7 +127,7 @@ To create Docker images:
   tasks:
     - name: Build and Push Aspera images
       include_role:
-        name: aspera_config
+        name: ar_osc_aspera
         tasks_from: docker
       vars:
         ar_osc_aspera_config_dest: "/tmp/docker"
@@ -142,20 +151,16 @@ To create Aspera Config:
   tasks:
     - name: "Build Aspera Config"
       include_role:
-        name: aspera_config
+        name: ar_osc_aspera
       vars:
         ar_osc_aspera_ssh_port:     "33001"
-        ar_osc_aspera_config_dest:         "/tmp/templates/{{ ar_osc_aspera_instance.name }}"
+        ar_osc_aspera_config_dest:  "/tmp/templates/{{ ar_osc_aspera_instance.name }}"
         ar_osc_aspera_k8s_template: "aspera-app-1.yml"          
 ```
 
-Outputs
--------
-Files:
+## Docker Instructions
 
 
-Docker Instructions
--------------------
 To build the docker images the rhel7 base image registry must be 
 available on the local machine and the operating user must also be able
 to execute docker commands as their own user.
@@ -172,12 +177,10 @@ On completions, the user should be able to execute docker commands
 without the use of 'sudo'.
 
 
-License
--------
+## License
 
 BSD
 
-Author Information
-------------------
+## Author Information
 
 dstewart@redhat.com

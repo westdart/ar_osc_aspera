@@ -53,6 +53,14 @@ openshift_cluster_content:
     tags:
     - aspera
 
+# Secrets {{ ar_osc_aspera_name }}
+  - name: {{ ar_osc_aspera_name }}-aspera-secrets
+    namespace: "{{ ar_osc_aspera_ns }}"
+    template: "{{ _ar_osc_aspera_config_dest_templates }}/aspera-secrets.yml"
+    action: apply
+    tags:
+    - aspera
+
 # Aspera instance for {{ ar_osc_aspera_name }}
   - name: "{{ ar_osc_aspera_instance | aspera_application_name }}"
     namespace: "{{ ar_osc_aspera_ns }}"
@@ -62,6 +70,7 @@ openshift_cluster_content:
       APPLICATION_NAME: "{{ ar_osc_aspera_instance | aspera_application_name }}"
       SEED_FILES_CM: "{{ ar_osc_aspera_name }}-aspera-config-map"
       SEED_FILES_CONF_HASH: "{{ lookup('file', _ar_osc_aspera_config_dest_templates + '/aspera-seed-files-cm.yml') | hash('md5') }}"
+      ASPERA_SECRETS: "{{ ar_osc_aspera_name }}-secrets"
 {% if aspera_image is defined or 'aspera_image' in ar_osc_aspera_instance %}
       IMAGE_NAME: {{ ar_osc_aspera_instance.aspera_image | default(aspera_image) }}
 {% endif %}
