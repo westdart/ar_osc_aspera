@@ -65,11 +65,13 @@ function initAspera()
     fi
 }
 
-function copyAuthorizedKeys()
+function copyKeys()
 {
-    cp ${SEED_DIR}/aspera_id_rsa.pub /home/${USERNAME}/.ssh/authorized_keys && \
+    cat "${SEED_DIR}/aspera_id_rsa.pub" | (base64 -d && echo "")     > /home/${USERNAME}/.ssh/id_rsa.pub && \
+    cat "${SEED_DIR}/aspera_id_rsa" | (base64 -d && echo "") > /home/${USERNAME}/.ssh/id_rsa && \
+    cp /home/${USERNAME}/.ssh/id_rsa.pub /home/${USERNAME}/.ssh/authorized_keys && \
     chown -R ${USERNAME}:root /home/${USERNAME}/.ssh/authorized_keys && \
-    chmod 600 /home/${USERNAME}/.ssh/authorized_keys
+    chmod 600 /home/${USERNAME}/.ssh/authorized_keys /home/${USERNAME}/.ssh/id_rsa
 }
 
 function runAspera()
@@ -116,6 +118,7 @@ trap "errorExit 'Received signal SIGTERM'" SIGTERM
 ensureUser        || exit 1
 createDirectories || exit 1
 copyFiles         || exit 1
+copyKeys          || exit 1
 initAspera        || exit 1
 startSshd         || exit 1
 runAspera         || exit 1
