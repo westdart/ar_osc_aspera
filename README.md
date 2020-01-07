@@ -153,7 +153,6 @@ To create Aspera Config:
       include_role:
         name: ar_osc_aspera
       vars:
-        ar_osc_aspera_ssh_port:     "33001"
         ar_osc_aspera_config_dest:  "/tmp/templates/{{ ar_osc_aspera_instance.name }}"
         ar_osc_aspera_k8s_template: "aspera-app-1.yml"          
 ```
