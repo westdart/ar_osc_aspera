@@ -14,10 +14,10 @@ ar_osc_aspera_endpoint_package: "{{ ar_osc_aspera_package_base_url }}/ibm-aspera
 
 ar_osc_aspera_have_rhel_subscription: false
 
+ar_osc_aspera_node_selector: null
+
 # Either 'ar_osc_aspera_package_dependencies' or 'ar_osc_aspera_package_list' is used based on what
 # 'ar_osc_aspera_have_rhel_subscription' is set to.
-# TODO - Note: 'nmap-ncat', 'libpcap-1.5.3-11.el7.x86_64.rpm' 'nmap-ncat-6.40-19.el7.x86_64.rpm' are only required for
-# the dummy aspera images and *must* be removed for the real images.
 
 ar_osc_aspera_package_dependencies:
   - openssh-server
@@ -25,7 +25,11 @@ ar_osc_aspera_package_dependencies:
   - perl-Data-Dumper
   - nmap-ncat
 
-ar_osc_aspera_labels: []
+ar_osc_aspera_labels: [
+  {"object": "DeploymentConfig", "name": "{{ ar_osc_aspera_instance | application_name }}"},
+  {"object": "Secret",           "name": "{{ ar_osc_aspera_instance | secrets_name }}"},
+  {"object": "ConfigMap",        "name": "{{ ar_osc_aspera_instance | config_map_name }}"}
+]
 
 ar_osc_aspera_rhel_base_image_name: 'aspera-rhel7-base'
 ar_osc_aspera_package_list: [

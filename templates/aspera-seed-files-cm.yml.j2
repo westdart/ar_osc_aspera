@@ -9,12 +9,12 @@ metadata:
     openshift.io/display-name: Aspera Config Map
   labels:
     app: {{ ar_osc_aspera_name }}
-  name: {{ ar_osc_aspera_name }}-aspera-config-map
+  name: {{ ar_osc_aspera_instance | config_map_name }}
 objects:
 - apiVersion: v1
   kind: ConfigMap
   metadata:
-    name: {{ ar_osc_aspera_name }}-aspera-config-map
+    name: {{ ar_osc_aspera_instance | config_map_name }}
     namespace: {{ ar_osc_aspera_ns }}
     labels:
       app: {{ ar_osc_aspera_name }}

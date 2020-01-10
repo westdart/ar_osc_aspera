@@ -138,7 +138,7 @@ To create Docker images:
 
 To create Aspera Config:
 ```
-- name: Build Aspera Docker images
+- name: Build Create Aspera Openshift Config
   hosts: localhost
   vars:
     ar_osc_aspera_instance: {

@@ -4,7 +4,8 @@ kind: Template
 labels:
   template: aspera-app-1
   xpaas: 1.4.10
-  appgroup: ${APP_GROUP}
+  appgroup: {{ ar_osc_aspera_instance | app_common_name }}
+  app: {{ ar_osc_aspera_instance | application_name }}
 message: A new file transfer service has been created in your project.
 metadata:
   annotations:
@@ -36,6 +37,10 @@ objects:
       port: {{ ar_osc_aspera_sshd_internal_port }}
       targetPort: {{ ar_osc_aspera_sshd_internal_port }}
       protocol: TCP
+    - name: fasp
+      port: {{ ar_osc_aspera_fasp_internal_port }}
+      targetPort: {{ ar_osc_aspera_fasp_internal_port }}
+      protocol: UDP
     - name: https
       port: 8443
       targetPort: 8443
@@ -247,10 +252,6 @@ parameters:
 - description: Aspera secrets
   displayName: Aspera Secrets
   name: ASPERA_SECRETS
-  required: true
-- description: Application Group Name
-  displayName: Application Group Name
-  name: APP_GROUP
   required: true
 - description: Hash of the seed files config for change detection purposes
   displayName: Seed files Config Hash
