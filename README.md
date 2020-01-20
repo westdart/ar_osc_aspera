@@ -103,7 +103,10 @@ The structure is:
 | ar_osc_aspera_launch_script          | The script executed to start Aspera and related processes                   | role_path + '/files/launch.sh'                           |
 | ar_osc_aspera_k8s_template           | The k8s template to use                                                     | 'aspera-app-1.yml'                                       |
 | ar_osc_aspera_username               | The Aspera username                                                         | 'aspera'                                                 |
-| ar_osc_aspera_version                | The version to ascribe to images created                                    | '1.0'                                                    |
+| ar_osc_aspera_image_rhel_version     | The version of rhel base image to use (referenced only)                     | '1.0'                                                    |
+| ar_osc_aspera_image_base_version     | The version of the Aspera base RHEL image (built and referenced)            | '1.0'                                                    |
+| ar_osc_aspera_image_hste_version     | The version of the Aspera HSTE image (built and referenced)                 | '1.0'                                                    |
+| ar_osc_aspera_image_hsts_version     | The version of the Aspera HSTS image (built and referenced)                 | '1.0'                                                    |
 | ar_osc_aspera_sshd_internal_port     | The SSHD internal port the Aspera Pod listens on                            | '33001'                                                  |
 | ar_osc_aspera_server_package         | The Aspera Server package to use                                            | ar_osc_aspera_package_base_url + '/dummy-1-0.noarch.rpm' |
 | ar_osc_aspera_endpoint_package       | The Aspera Endpoint package to use                                          | ar_osc_aspera_package_base_url + '/dummy-1-0.noarch.rpm' |

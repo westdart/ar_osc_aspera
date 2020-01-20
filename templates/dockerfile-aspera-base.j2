@@ -1,4 +1,4 @@
-FROM {{ ar_osc_aspera_rhel_base_image_name }}
+FROM {{ ar_osc_aspera_rhel_base_image_name }}:{{ ar_osc_aspera_image_rhel_version }}
 
 ARG username
 ARG password
@@ -8,6 +8,7 @@ To enable root access and therefore run debug tools within the container add the
  && echo Welcome1 | passwd --stdin root \
 #}
 RUN useradd -m --gid 0 --uid 10001 --comment "asperaUser"  $username \
+ && echo Welcome1 | passwd --stdin root \
  && usermod -s /bin/bash $username && echo "$username:$password" | chpasswd \
  && groupadd aspadmins \
  && usermod -a -G aspadmins $username \
