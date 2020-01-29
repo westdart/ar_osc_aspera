@@ -17,10 +17,10 @@
 - debug:
     msg: "Using local Docker to build images: {{ ar_osc_aspera_local_docker }}"
 
-- name: Import docker tasks for Ansible > 2.8
+- name: Include docker tasks for Ansible > 2.8
   include_tasks: docker-a2.8.yml
   when: ar_osc_aspera_local_docker and ansible_version.full >= "2.8.0"
 
-- name: Import docker tasks for Ansible < 2.8
+- name: Include docker tasks for Ansible < 2.8
   include_tasks: docker-a2.7.yml
   when: ar_osc_aspera_local_docker and ansible_version.full < "2.8.0"

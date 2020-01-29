@@ -24,7 +24,7 @@
     force: no
   when: not ar_osc_aspera_have_rhel_subscription
 
-- name: Tag Aspera RHEL7 Base Image in Local Repo
+- name: Tag Aspera RHEL Image in Local Repo
   docker_image:
     name: "{{ _ar_osc_aspera_docker_registry_base }}/{{ ar_osc_aspera_rhel_base_image_name }}:{{ ar_osc_aspera_image_rhel_version }}"
     repository: "{{ ar_osc_aspera_rhel_base_image_name }}:{{ ar_osc_aspera_image_rhel_version }}"
