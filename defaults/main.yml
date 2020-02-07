@@ -12,7 +12,7 @@ ar_osc_aspera_push_images: yes
 ar_osc_aspera_push_timeout: 180
 ar_osc_aspera_local_docker: true
 
-ar_osc_aspera_server_package: "{{ ar_osc_aspera_package_base_url }}/ibm-aspera-hsts-3.9.1.168302-linux-6411.rpm"
+ar_osc_aspera_server_package: "{{ ar_osc_aspera_package_base_url }}/ibm-aspera-hsts-3.9.1.168302-linux-641.rpm"
 ar_osc_aspera_endpoint_package: "{{ ar_osc_aspera_package_base_url }}/ibm-aspera-hste-3.9.1.168302-linux-64.rpm"
 
 ar_osc_aspera_have_rhel_subscription: false
