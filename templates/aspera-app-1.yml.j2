@@ -207,7 +207,8 @@ objects:
           - mountPath: /mnt/aspera/.secrets/
             name: secrets
             readOnly: true
-        imagePullPolicy: Always
+          image: ${IMAGE_NAME}
+          imagePullPolicy: Always
         serviceAccountName: aspera-sa
         terminationGracePeriodSeconds: 60
         volumes:
@@ -218,15 +219,6 @@ objects:
           secret:
             secretName: ${ASPERA_SECRETS}
     triggers:
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - ${APPLICATION_NAME}
-        from:
-          kind: ImageStreamTag
-          name: ${IMAGE_NAME}
-          namespace: ${IMAGE_STREAM_NAMESPACE}
-      type: ImageChange
     - type: ConfigChange
 parameters:
 - description: The name of the application.
