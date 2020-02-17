@@ -7,7 +7,7 @@
 #        |---- aspera-hsts : Aspera endpoint image
 
 - debug:
-    msg: "docker login -p {{ registry_login_credentials | registry_password(ar_osc_aspera_docker_registry, 'push') }} -u {{ registry_login_credentials | registry_username(ar_osc_aspera_docker_registry, 'push') }} {{ ar_osc_aspera_docker_registry }}"
+    msg: "Logging into Docker registry with 'push' user: {{ ar_osc_aspera_docker_registry }}"
 
 - name: Login to Openshift Docker Repository
   shell: docker login -p {{ registry_login_credentials | registry_password(ar_osc_aspera_docker_registry, 'push') }} -u {{ registry_login_credentials | registry_username(ar_osc_aspera_docker_registry, 'push') }} {{ ar_osc_aspera_docker_registry }}

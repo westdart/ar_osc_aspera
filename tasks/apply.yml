@@ -1,4 +1,7 @@
 ---
-- name: Include openshift-applier role
+- name: Seed OpenShift
   include_role:
-    name: roles/openshift-applier/roles/openshift-applier
+    name: ar_os_seed
+    tasks_from: apply
+  vars:
+    ar_os_seed_openshift_login_url: "{{ ar_osc_aspera_instance['oc_login_url'] | default(oc_login_url) }}"

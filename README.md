@@ -178,6 +178,20 @@ versions).
 On completions, the user should be able to execute docker commands 
 without the use of 'sudo'.
 
+## Running multiple Aspera Instances in a Cluster
+
+The design is to run Aspera Nodes across different clusters, however
+it can be set up to run multiple instances on a single cluster in 
+different namespaces (projects) however, for this to work, the networks
+of the projects need to be joined and the cluster ips used instead of
+the routes. i.e. to allow traffic to flow from one project to another:
+```
+$ oc adm pod-network join-projects --to=project1 project2
+$ oc adm pod-network join-projects --to=project2 project1
+```
+This is only required if the network plugin is set to multi-tenant,
+if using subnet, all projects can see all other projects, if using 
+network-policy, specific policies will need to be setup.
 
 ## License
 
