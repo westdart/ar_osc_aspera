@@ -1,7 +1,7 @@
 ---
 - name: Label Aspera Objects with appgroup
   include_role:
-    name: roles/casl-ansible/roles/openshift-labels
+    name: casl-ansible/roles/openshift-labels
   vars:
     label:            "appgroup={{ ar_osc_aspera_name }}"
     target_object:    "{{ ar_osc_aspera_label.object }}"
@@ -13,7 +13,7 @@
 
 - name: Label Aspera Objects with app
   include_role:
-    name: roles/casl-ansible/roles/openshift-labels
+    name: casl-ansible/roles/openshift-labels
   vars:
     label:            "app={{ ar_osc_aspera_instance | application_name }}"
     target_object:    "{{ ar_osc_aspera_label.object }}"
