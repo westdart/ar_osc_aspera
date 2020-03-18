@@ -17,7 +17,7 @@ ibm-aspera-hsts-3.9.1.168302-linux-6411.rpm
 ibm-aspera-hste-3.9.1.168302-linux-64.rpm
 ```
 
-#### Aspear RPM dependencies
+#### Aspera RPM dependencies
 ```
 tcp_wrappers-libs-7.6-77.el7.x86_64.rpm
 fipscheck-lib-1.4.1-6.el7.x86_64.rpm
@@ -66,17 +66,19 @@ The following details:
 - the secrets that should generally be sourced from an ansible vault.
 
 ### Parameters:
-| Variable                                | Description                                                                         | Default                   |
-| --------                                | -----------                                                                         | -------                   |
-| ar_osc_aspera_instance                  | Object defining the Aspera instance (see below)                                     | None                      |
-| ar_osc_aspera_config_dest               | Path to where generated config files are placed                                     | /tmp                      |
-| ar_osc_aspera_docker_registry           | The docker registry to push built images to                                         | None                      |
-| ar_osc_aspera_docker_registry_dest_path | The path under the registry where images are pushed (typically a k8s namespace)     | 'openshift'               |
-| ar_osc_aspera_package_base_url          | Base URL to where the RPM files can be found (if not using a subscribed base image) | None                      |
-| ar_osc_aspera_license_file              | Path to the Aspera license file for the instance                                    | 'aspera_license_file' var |
+| Variable                                | Description                                                                         | Default                                                                                                               |
+| --------                                | -----------                                                                         | -------                                                                                                               |
+| ar_osc_aspera_ns                        | Openshift Namespace / Project                                                       | fn: app_namespace                                                                                                     |
+| ar_osc_aspera_name                      | Application name                                                                    | fn: app_common_name                                                                                           |
+| ar_osc_aspera_instance                  | Object defining the Aspera instance (see below)                                     | None                                                                                                                  |
+| ar_osc_aspera_config_dest               | Path to where generated config files are placed                                     | /tmp                                                                                                                  |
+| ar_osc_aspera_docker_registry           | The docker registry to push built images to                                         | None                                                                                                                  |
+| ar_osc_aspera_docker_registry_dest_path | The path under the registry where images are pushed (typically a k8s namespace)     | 'openshift'                                                                                                           |
+| ar_osc_aspera_package_base_url          | Base URL to where the RPM files can be found (if not using a subscribed base image) | None                                                                                                                  |
+| ar_osc_aspera_license_file              | Path to the Aspera license file for the instance                                    | 'aspera_license_file' taken from the 'ar_osc_amqinterconnect_instance'                                                |
+| ar_osc_aspera_serviceaccounts           | List of objects defining Service Account and required Security Context Constraint   | 'aspera_serviceaccounts' taken either from the 'ar_osc_amqinterconnect_instance' or global ansible variable namespace |
 
 The 'ar_osc_aspera_instance' variable is an object that contains the details on each instance required.
-
 The structure is:
 ```
   {
@@ -86,6 +88,23 @@ The structure is:
     aspera_ssh_node_port:  <the TCP port used by the NodePort Service for SSH>,
     aspera_fasp_node_port: <the UDP port used by the NodePort Service for FASP>
   }
+```
+
+The structure of the 'ar_osc_aspera_serviceaccounts' is:
+```
+  {
+    sa_name: "<the service account name>",
+    scc: "<name of the scc to ascribe to the service account>",
+  }
+```
+As the Aspera container needs to run as a specific user, the above object should look something like:
+```
+  [ 
+    { 
+      sa_name: "aspera-sa", 
+      scc: "anyuid"
+    }
+  ]
 ```
 
 ### Secrets:
@@ -98,8 +117,6 @@ The structure is:
 ### Defaults
 | Variable                             | Description                                                                 | Default                                                  |
 | --------                             | -----------                                                                 | -------                                                  |
-| ar_osc_aspera_ns                     | Openshift Namespace / Project                                               | fn: app_namespace                                        |
-| ar_osc_aspera_name                   | Application name                                                            | ar_osc_aspera_instance.name                              |
 | ar_osc_aspera_launch_script          | The script executed to start Aspera and related processes                   | role_path + '/files/launch.sh'                           |
 | ar_osc_aspera_k8s_template           | The k8s template to use                                                     | 'aspera-app-1.yml'                                       |
 | ar_osc_aspera_username               | The Aspera username                                                         | 'aspera'                                                 |
@@ -114,12 +131,13 @@ The structure is:
 | ar_osc_aspera_package_dependencies   | Direct Aspera package dependencies                                          | (see above RPM requirements)                             |
 | ar_osc_aspera_rhel_base_image_name   | The image name given to the RHEL 7 image + dependent packages               | 'aspera-rhel7-base'                                      |
 | ar_osc_aspera_package_list           | The complete list of package dependencies                                   | (see RPM requirements above)                             |
+| ar_osc_aspera_openshift_login_url    | The Openshift cluster to connect to                                        | 'oc_login_url' taken either from the 'ar_osc_amqbroker_instance' or global ansible variable namespace                                                                                   |
 
 
 ## Dependencies
-
-- openshift-applier
-
+- ar_os_common
+- ar_os_seed
+- casl-ansible/roles/openshift-labels
 
 ## Example Playbook
 
@@ -133,13 +151,13 @@ To create Docker images:
         name: ar_osc_aspera
         tasks_from: docker
       vars:
-        ar_osc_aspera_config_dest: "/tmp/docker"
+        ar_osc_aspera_config_dest: "/tmp/aspera"
         ar_osc_aspera_docker_registry: "docker-registry-default.my-openshift.local"
         ar_osc_aspera_package_base_url: "http://localhost:8081/artifactory/dump"
           
 ```
 
-To create Aspera Config:
+To build docker images and deploy Aspera:
 ```
 - name: Build Create Aspera Openshift Config
   hosts: localhost
@@ -156,8 +174,22 @@ To create Aspera Config:
       include_role:
         name: ar_osc_aspera
       vars:
-        ar_osc_aspera_config_dest:  "/tmp/templates/{{ ar_osc_aspera_instance.name }}"
-        ar_osc_aspera_k8s_template: "aspera-app-1.yml"          
+        ar_osc_aspera_ns:                        "aspera-ns"
+        ar_osc_aspera_name:                      "my-aspera"
+        ar_osc_aspera_config_dest:               "/tmp/aspera"
+        ar_osc_aspera_k8s_template:              "aspera-app-1.yml"
+        ar_osc_aspera_docker_registry:           "docker-registry-default.my-openshift.local"
+        ar_osc_aspera_package_base_url:          "http://localhost:8081/artifactory/dump"
+        ar_osc_aspera_docker_registry_dest_path: "image_ns"
+        ar_osc_aspera_serviceaccounts:
+          - sa_name: "aspera-sa"
+            scc: "anyuid"       
+        ar_osc_aspera_instance:
+          aspera_license_file: "my-licence"
+          oc_login_url: ''
+          aspera_image: ''
+          aspera_ssh_node_port: ''
+          aspera_fasp_node_port: ''
 ```
 
 ## Docker Instructions
