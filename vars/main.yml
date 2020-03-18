@@ -2,7 +2,6 @@
 ar_osc_aspera_ns: null
 ar_osc_aspera_name: null
 ar_osc_aspera_instance: null
-
 ar_osc_aspera_config_dest: '/tmp'
 ar_osc_aspera_docker_registry: null
 ar_osc_aspera_docker_registry_dest_path: 'openshift'

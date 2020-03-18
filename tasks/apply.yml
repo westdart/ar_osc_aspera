@@ -4,4 +4,4 @@
     name: ar_os_seed
     tasks_from: apply
   vars:
-    ar_os_seed_openshift_login_url: "{{ ar_osc_aspera_instance['oc_login_url'] | default(oc_login_url) }}"
+    ar_os_seed_openshift_login_url: "{{ ar_osc_aspera_openshift_login_url }}"

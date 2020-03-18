@@ -16,24 +16,24 @@
     dest: "{{ _ar_osc_aspera_sshd_config_file }}"
 
 - set_fact:
-    _aspera_image: "{{ ar_osc_aspera_instance.aspera_image | default(aspera_image) }}"
+    _ar_osc_aspera_image: "{{ ar_osc_aspera_instance.aspera_image | default(aspera_image) }}"
 
 - set_fact:
-    aspera_conf_template: "aspera_hsts_conf.j2"
-  when: '"hsts" in _aspera_image'
+    _ar_osc_aspera_conf_template: "aspera_hsts_conf.j2"
+  when: '"hsts" in _ar_osc_aspera_image'
 
 - set_fact:
-    aspera_conf_template: "aspera_hste_conf.j2"
-  when: '"hste" in _aspera_image'
+    _ar_osc_aspera_conf_template: "aspera_hste_conf.j2"
+  when: '"hste" in _ar_osc_aspera_image'
 
 - name: Guard against invalid config
   fail:
     msg: "The Aspera image name must contain either 'hsts' or 'hste' depending on whether '{{ ar_osc_aspera_name }}' is a server or endpoint"
-  when: '"hste" not in _aspera_image and "hsts" not in _aspera_image'
+  when: '"hste" not in _ar_osc_aspera_image and "hsts" not in _ar_osc_aspera_image'
 
 - name: Generate aspera config
   template:
-    src: "{{ aspera_conf_template }}"
+    src: "{{ _ar_osc_aspera_conf_template }}"
     dest: "{{ _ar_osc_aspera_config_file }}"
 
 - name: Copy launch script to common area

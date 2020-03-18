@@ -15,6 +15,8 @@ ar_osc_aspera_local_docker: true
 ar_osc_aspera_server_package: "{{ ar_osc_aspera_package_base_url }}/ibm-aspera-hsts-3.9.1.168302-linux-641.rpm"
 ar_osc_aspera_endpoint_package: "{{ ar_osc_aspera_package_base_url }}/ibm-aspera-hste-3.9.1.168302-linux-64.rpm"
 
+ar_osc_aspera_openshift_login_url: "{{ ar_osc_aspera_instance['oc_login_url'] | default(oc_login_url) }}"
+
 ar_osc_aspera_have_rhel_subscription: false
 
 ar_osc_aspera_node_selector: null
@@ -91,8 +93,6 @@ _ar_osc_aspera_launch_script: "{{ _ar_osc_aspera_config_dest_templates }}/launch
 _ar_osc_aspera_docker_registry_base: "{{ ar_osc_aspera_docker_registry }}/{{ ar_osc_aspera_docker_registry_dest_path }}"
 
 
-ar_osc_aspera_openshift_login_url: "{{ ar_osc_aspera_instance['oc_login_url'] | default(oc_login_url) }}"
-
 _ar_osc_aspera_openshift_content: [
   { name: "{{ ar_osc_aspera_instance | config_map_name }}",  template: "{{ _ar_osc_aspera_config_dest_templates }}/aspera-seed-files-cm.yml" },
   { name: "{{ ar_osc_aspera_instance | secrets_name }}",     template: "{{ _ar_osc_aspera_config_dest_templates }}/aspera-secrets.yml"},
@@ -103,7 +103,6 @@ _ar_osc_aspera_openshift_content: [
       SEED_FILES_CONF_HASH: "{{ lookup('file', _ar_osc_aspera_config_dest_templates + '/aspera-seed-files-cm.yml') | hash('md5') }}",
       ASPERA_SECRETS: "{{ ar_osc_aspera_instance | secrets_name }}",
       IMAGE_NAME: "{{ ar_osc_aspera_instance.aspera_image | default(aspera_image) }}",
-      IMAGE_STREAM_NAMESPACE: "{{ ar_osc_aspera_instance.aspera_image_ns | default(aspera_image_ns) }}",
       SSH_NODE_PORT: "{{ ar_osc_aspera_instance.aspera_ssh_node_port | default('30022') }}",
       FASP_NODE_PORT: "{{ ar_osc_aspera_instance.aspera_fasp_node_port | default('30023') }}"
     }
