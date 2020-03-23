@@ -9,15 +9,15 @@
     - aspera_hste
     - aspera_hsts
 
-- name: Generate the Dockerfile for Aspera Base
-  template:
-    src: dockerfile-aspera-base.j2
-    dest: "{{ _ar_osc_aspera_config_dest_docker }}/aspera_base/Dockerfile"
-
 - name: Generate the Dockerfile for Aspera RHEL7 Base
   template:
     src: dockerfile-generic-rpm.j2
     dest: "{{ _ar_osc_aspera_config_dest_docker }}/aspera_rhel7_base/Dockerfile"
+
+- name: Generate the Dockerfile for Aspera Base
+  template:
+    src: dockerfile-aspera-base.j2
+    dest: "{{ _ar_osc_aspera_config_dest_docker }}/aspera_base/Dockerfile"
 
 - name: Generate the Dockerfile for Aspera HSTE
   template:
