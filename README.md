@@ -124,7 +124,8 @@ As the Aspera container needs to run as a specific user, the above object should
 | ar_osc_aspera_image_base_version     | The version of the Aspera base RHEL image (built and referenced)            | '1.0'                                                    |
 | ar_osc_aspera_image_hste_version     | The version of the Aspera HSTE image (built and referenced)                 | '1.0'                                                    |
 | ar_osc_aspera_image_hsts_version     | The version of the Aspera HSTS image (built and referenced)                 | '1.0'                                                    |
-| ar_osc_aspera_sshd_internal_port     | The SSHD internal port the Aspera Pod listens on                            | '33001'                                                  |
+| ar_osc_aspera_sshd_internal_port     | The SSHD internal port the Aspera Pod listens on                            | '30001'                                                  |
+| ar_osc_aspera_fasp_internal_port     | The FASP internal port the Aspera Pod listens on                            | '30002'                                                  |
 | ar_osc_aspera_server_package         | The Aspera Server package to use                                            | ar_osc_aspera_package_base_url + '/dummy-1-0.noarch.rpm' |
 | ar_osc_aspera_endpoint_package       | The Aspera Endpoint package to use                                          | ar_osc_aspera_package_base_url + '/dummy-1-0.noarch.rpm' |
 | ar_osc_aspera_have_rhel_subscription | Boolean marking if th base image is subscribed to RedHat satellite channels | false                                                    |
