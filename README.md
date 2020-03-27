@@ -262,6 +262,11 @@ Obviously, any direct change to any of the docker template files
 (templates/dockerfile-*) also warrants a change to the respective Aspera 
 version
 
+These version variables should not be confused with the variables held
+in the Environment Data Store that reference specific versions of the 
+HSTS and HSTE images for the specific environment (see aspera_image_hsts 
+and aspera_image_hste).
+
 ## Logging
 This is a wip and some analysis as to this approach an configuration 
 should be made.
