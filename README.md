@@ -237,6 +237,31 @@ This is only required if the network plugin is set to multi-tenant,
 if using subnet, all projects can see all other projects, if using 
 network-policy, specific policies will need to be setup.
 
+## Versioning
+The versions applied to the Docker builds are held in the 
+defaults/main.yml. As this role itself needs to be versioned when used
+via Ansible Galaxy (e.g. when running from within Ansible Tower) it is 
+recommended that the management of container image versions is kept
+within this role (i.e. the respective variables are not modified 
+externally to this role). A line can thenn be drawn between the role 
+version and the container image version.
+
+When modifying the content of the images it is important to know when
+a version change is required. The following is some guidance around
+this, showing when an Ansible variable changes, when this would warrant
+an increment in the respective image version.
+
+| Image             | Purpose                                     | Version var                      | Version Change                                                         |
+| -----             | -------                                     | -----------                      | --------------                                                         |
+| aspera-rhel7-base | RHEL 7 + package installation               | ar_osc_aspera_image_rhel_version | Any change to 'ar_osc_aspera_package_list'                             |
+| aspera-base       | Common modifications for both HSTS and HSTE | ar_osc_aspera_image_base_version | A change to the Aspera password, i.e. 'aspera_secrets.aspera_password' |
+| aspera-hsts       | The deployable server component             | ar_osc_aspera_image_hste_version | A change to 'ar_osc_aspera_server_package'                             |
+| aspera-hste       | The deployable endpoint component           | ar_osc_aspera_image_hsts_version | A change to 'ar_osc_aspera_endpoint_package'                           |
+
+Obviously, any direct change to any of the docker template files 
+(templates/dockerfile-*) also warrants a change to the respective Aspera 
+version
+
 ## Logging
 This is a wip and some analysis as to this approach an configuration 
 should be made.
@@ -247,13 +272,18 @@ container, allowing Apsera log messages to appear in the
 
 Modifications to the installation to allow it to run in the container
 were:
-1. Use the config file provided in the Config Map. Notable 
+1. Additional RPMs required in package repository
+  - libestr-0.1.9-2.el7.x86_64.rpm
+  - libfastjson-0.99.4-3.el7.x86_64.rpm
+  - logrotate-3.8.6-17.el7.x86_64.rpm
+  - rsyslog-8.24.0-41.el7_7.4.x86_64.rpm
+2. Use the config file provided in the Config Map. Notable 
 differences to the default are:
   - Remove imjournal module load
   - Remove '$IMJournalStateFile imjournal.state'
   - Set '$OmitLocalLogging off'
   - Set '$SystemLogSocketName /dev/log'
-2. Set the 'setuid' bit on the rsyslogd executable, to allow execution 
+3. Set the 'setuid' bit on the rsyslogd executable, to allow execution 
 by the 'aspera' user when the container starts
 
 ## License
