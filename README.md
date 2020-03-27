@@ -54,10 +54,22 @@ perl-podlators-2.5.1-3.el7.noarch.rpm
 perl-threads-1.87-4.el7.x86_64.rpm
 perl-threads-shared-1.43-6.el7.x86_64.rpm
 dumb-init-1.2.0-1.20170802gitd283f8a.el6.x86_64.rpm
-libpcap-1.5.3-11.el7.x86_64.rpm
-nmap-ncat-6.40-19.el7.x86_64.rpm"
+libestr-0.1.9-2.el7.x86_64.rpm
+libfastjson-0.99.4-3.el7.x86_64.rpm
+logrotate-3.8.6-17.el7.x86_64.rpm
+rsyslog-8.24.0-41.el7_7.4.x86_64.rpm
 ```
 
+If debug tooling is required the following has been used to debug and
+run protocol analysis on the system:
+```
+libpcap-1.5.3-11.el7.x86_64.rpm
+nmap-ncat-6.40-19.el7.x86_64.rpm
+libedit-3.0-12.20121213cvs.el7.x86_64.rpm
+openssh-clients-7.4p1-21.el7.x86_64.rpm
+net-tools-2.0-0.25.20131004git.el7.x86_64.rpm
+tcpdump-4.9.2-4.el7_7.1.x86_64.rpm
+```
 
 ## Role Variables
 The following details:
@@ -195,7 +207,6 @@ To build docker images and deploy Aspera:
 
 ## Docker Instructions
 
-
 To build the docker images the rhel7 base image registry must be 
 available on the local machine and the operating user must also be able
 to execute docker commands as their own user.
@@ -225,6 +236,25 @@ $ oc adm pod-network join-projects --to=project2 project1
 This is only required if the network plugin is set to multi-tenant,
 if using subnet, all projects can see all other projects, if using 
 network-policy, specific policies will need to be setup.
+
+## Logging
+This is a wip and some analysis as to this approach an configuration 
+should be made.
+
+To enable logs to be seen from Aspera, rsyslogd is installed into the 
+container, allowing Apsera log messages to appear in the 
+/var/log/messages file.
+
+Modifications to the installation to allow it to run in the container
+were:
+1. Use the config file provided in the Config Map. Notable 
+differences to the default are:
+  - Remove imjournal module load
+  - Remove '$IMJournalStateFile imjournal.state'
+  - Set '$OmitLocalLogging off'
+  - Set '$SystemLogSocketName /dev/log'
+2. Set the 'setuid' bit on the rsyslogd executable, to allow execution 
+by the 'aspera' user when the container starts
 
 ## License
 

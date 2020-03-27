@@ -31,3 +31,8 @@ objects:
 {% for line in lookup('file', _ar_osc_aspera_config_file).split('\n') %}
       {{ line }}
 {% endfor %}
+    rsyslog.conf: |-
+{% for line in lookup('file', _ar_osc_aspera_rsyslog_config).split('\n') %}
+      {{ line }}
+{% endfor %}
+

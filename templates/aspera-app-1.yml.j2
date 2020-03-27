@@ -191,14 +191,16 @@ objects:
             name: fasp
             protocol: UDP
           name: ${APPLICATION_NAME}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8443
           readinessProbe:
-            httpGet:
-              path: /
-              port: 8443
+            tcpSocket:
+              port: {{ ar_osc_aspera_sshd_internal_port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: {{ ar_osc_aspera_sshd_internal_port }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
           terminationGracePeriodSeconds: 60
           volumeMounts:
           - mountPath: /mnt/aspera/seed/

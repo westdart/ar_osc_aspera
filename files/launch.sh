@@ -11,6 +11,7 @@ ASPERA_TYPE=$(cat /aspera-type)
 SEED_DIR=/mnt/aspera/seed
 SECRETS_DIR=/mnt/aspera/.secrets
 SSHD_PID=
+RSYSLOG_PID=
 
 if [[ "${ASPERA_TYPE}" == "HSTE" ]]; then
     FT_BASEDIR=/mjdi/local/GFT
@@ -49,10 +50,17 @@ function startSshd()
     SSHD_PID=$!
 }
 
+function startRsyslog()
+{
+    /usr/sbin/rsyslogd -f /opt/aspera/etc/rsyslog.conf || return 1
+    RSYSLOG_PID=$!
+}
+
 function copyFiles()
 {
-    cp ${SEED_DIR}/sshd_config /home/${USERNAME}/sshd_config
-    cp ${SEED_DIR}/aspera.conf /opt/aspera/etc/aspera.conf
+    cp ${SEED_DIR}/sshd_config  /home/${USERNAME}/sshd_config
+    cp ${SEED_DIR}/aspera.conf  /opt/aspera/etc/aspera.conf
+    cp ${SEED_DIR}/rsyslog.conf /opt/aspera/etc/rsyslog.conf
 }
 
 function initAspera()
@@ -120,9 +128,10 @@ ensureUser        || exit 1
 createDirectories || exit 1
 copyFiles         || exit 1
 copyKeys          || exit 1
+startRsyslog      || exit 1
 initAspera        || exit 1
 startSshd         || exit 1
 runAspera         || exit 1
 seedAspera        || exit 1
 
-while true ; do nc -l -p 8443 -c 'echo -e "HTTP/1.1 200 OK\n\n $(date)"'; done
+tail -f /var/log/messages

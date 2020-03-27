@@ -41,6 +41,11 @@
     src: "{{ ar_osc_aspera_launch_script }}"
     dest: "{{ _ar_osc_aspera_launch_script }}"
 
+- name: Copy rsyslog config to common area
+  copy:
+    src: "{{ ar_osc_aspera_rsyslog_config }}"
+    dest: "{{ _ar_osc_aspera_rsyslog_config }}"
+
 - name: Generate aspera seed files config map
   template:
     src: aspera-seed-files-cm.yml.j2
